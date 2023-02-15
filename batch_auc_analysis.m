@@ -7,7 +7,7 @@ filepath_name = 'npdata_process_path_202206batch.xlsx';
 [~,filepathtemp,~] = xlsread(fullfile(filepath_path,filepath_name));
 filenum = length(filepathtemp)-1;
 
-for ifile = 19:filenum
+for ifile = 1:filenum
     %% loading data
     %np_data_pathway =  'D:\DJ_data\catprocessdata\202206batch_mouse1_cat\20220828_mouse1_OFC1R_OFC2L_PPC2L_g0_cat\Cat_20220828_mouse1_OFC1R_OFC2L_PPC2L_g0_imec0\ks2_5';
     np_data_pathway = fullfile(filepathtemp{ifile+1},'ks2_5');

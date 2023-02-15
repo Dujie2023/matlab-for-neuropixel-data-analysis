@@ -65,13 +65,16 @@ saveas(gcf, fullfile(save_folder,[labelname, 'bfanswer_vs_afafanswer_auc.fig']))
 close;
 
 %% cal threshold of significance
-[sig_thre05_aline2tone, sig_thre01_aline2tone] = parfor_auc_sigthreshold([neuroactivity_bftone;neuroactivity_aftone], cur_label, 1000, save_folder, labelname, useUtest);
-[sig_thre05_aline2answer, sig_thre01_aline2answer] = parfor_auc_sigthreshold([neuroactivity_bfanswer;neuroactivity_afanswer], cur_label, 1000, save_folder, labelname, useUtest);
+[sig_thre05_bftone, sig_thre01_bftone] = parfor_auc_sigthreshold(neuroactivity_bftone, cur_label, 1000, save_folder, labelname, useUtest);
+[sig_thre05_aftone, sig_thre01_aftone] = parfor_auc_sigthreshold(neuroactivity_aftone, cur_label, 1000, save_folder, labelname, useUtest);
+[sig_thre05_bfanswer, sig_thre01_bfanswer] = parfor_auc_sigthreshold(neuroactivity_bfanswer, cur_label, 1000, save_folder, labelname, useUtest);
+[sig_thre05_afanswer, sig_thre01_afanswer] = parfor_auc_sigthreshold(neuroactivity_aftone, cur_label, 1000, save_folder, labelname, useUtest);
 
 %% save results 
 save(fullfile(save_folder,[labelname,' auc.mat']), 'auc_bftone', 'auc_aftone',...
-  'auc_bfanswer', 'auc_afanswer','sig_thre05_aline2tone', 'sig_thre01_aline2tone',...
-  'sig_thre05_aline2answer','sig_thre01_aline2answer','cur_label','labelname'...
+  'auc_bfanswer', 'auc_afanswer','sig_thre05_bftone', 'sig_thre01_bftone',...
+  'sig_thre05_aftone','sig_thre01_aftone','sig_thre05_bfanswer','sig_thre01_bfanswer',...
+  'sig_thre05_afanswer','sig_thre01_afanswer','cur_label','labelname'...
   ,'nbin_aftone', 'nbin_afanswer');
 
 %% plot for small time window

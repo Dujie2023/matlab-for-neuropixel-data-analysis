@@ -4,8 +4,8 @@ function [sig_thre05, sig_thre01] = parfor_auc_sigthreshold(all_neuroactivity, t
 %type: label, e.g. blocktype, tritype
 
 %output
-%sigthre05: 0.05
-%sigthre01: 0.01
+%sigthre05: 0.05, nunit*1
+%sigthre01: 0.01, nunit*1
 
 CoreNum=6; %设定机器CPU核心数量
 if isempty(gcp('nocreate')) %如果并行未开启
@@ -34,18 +34,16 @@ else
         end
     end
 end
-
-%distribution
-AUC_random = AUC_random(:);
-figure;
-histogram(AUC_random);
-xlabel('AUC');
-saveas(gcf, fullfile(savefolder,[varname 'AUC sig histogram.png' ]));
-saveas(gcf, fullfile(savefolder,[varname 'AUC sig histogram.fig' ]));
-close;
-
 sig_thre05 = prctile(AUC_random,95);
 sig_thre01 = prctile(AUC_random,99);
+% %distribution
+% AUC_random = AUC_random(:);
+% figure;
+% histogram(AUC_random);
+% xlabel('AUC');
+% saveas(gcf, fullfile(savefolder,[varname 'AUC sig histogram.png' ]));
+% saveas(gcf, fullfile(savefolder,[varname 'AUC sig histogram.fig' ]));
+% close;
 
 end
 

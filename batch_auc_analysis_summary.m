@@ -44,7 +44,7 @@ for ifile = 1:filenum
     
     %auc data organization
     auc_block = [auc_bftone auc_aftone auc_bfanswer auc_afanswer];
-    auc_blocksigthre = [sig_thre01_aline2tone sig_thre01_aline2tone sig_thre01_aline2answer sig_thre01_aline2answer];
+    auc_blocksigthre = [sig_thre01_bftone' sig_thre01_aftone' sig_thre01_bfanswer' sig_thre01_afanswer'];
     trinumber = length(cur_label);
     switchtimes = sum(diff(cur_label)~=0);
 
@@ -52,29 +52,29 @@ for ifile = 1:filenum
     aucinfo_filename = 'Choice auc';
     load(fullfile(np_data_pathway,'auc',aucinfo_filename));
     choice_auc = [auc_bftone auc_aftone auc_bfanswer auc_afanswer];
-    auc_choicesigthre = [sig_thre01_aline2tone sig_thre01_aline2tone sig_thre01_aline2answer sig_thre01_aline2answer];
+    auc_choicesigthre = [sig_thre01_bftone' sig_thre01_aftone' sig_thre01_bfanswer' sig_thre01_afanswer'];
 
     %outcome infomation
     aucinfo_filename = 'Outcome auc';
     load(fullfile(np_data_pathway,'auc',aucinfo_filename));
     outcome_auc = [auc_bftone auc_aftone auc_bfanswer auc_afanswer];
-    auc_outcomesigthre = [sig_thre01_aline2tone sig_thre01_aline2tone sig_thre01_aline2answer sig_thre01_aline2answer];
+    auc_outcomesigthre = [sig_thre01_bftone' sig_thre01_aftone' sig_thre01_bfanswer' sig_thre01_afanswer'];
 
     for i = 1:abareanum
         AUCSummaryRegions(i).aucblock = [AUCSummaryRegions(i).aucblock;...
             auc_block(probeAbArea(i).idx_probeUsedClus_IDs,:)];
         AUCSummaryRegions(i).aucblock_sigthre = [AUCSummaryRegions(i).aucblock_sigthre; ...
-            ones(probeAbArea(i).probeUsedClus_num,1)*auc_blocksigthre];
+            auc_blocksigthre(probeAbArea(i).idx_probeUsedClus_IDs,:)];
 
         AUCSummaryRegions(i).aucchoice = [AUCSummaryRegions(i).aucchoice;...
             choice_auc(probeAbArea(i).idx_probeUsedClus_IDs,:)];
         AUCSummaryRegions(i).aucchoice_sigthre = [AUCSummaryRegions(i).aucchoice_sigthre; ...
-            ones(probeAbArea(i).probeUsedClus_num,1)*auc_choicesigthre];
+            auc_choicesigthre(probeAbArea(i).idx_probeUsedClus_IDs,:)];
 
         AUCSummaryRegions(i).aucoutcome = [AUCSummaryRegions(i).aucoutcome;...
             outcome_auc(probeAbArea(i).idx_probeUsedClus_IDs,:)];
         AUCSummaryRegions(i).aucoutcome_sigthre = [AUCSummaryRegions(i).aucoutcome_sigthre; ...
-            ones(probeAbArea(i).probeUsedClus_num,1)*auc_outcomesigthre];
+            auc_outcomesigthre(probeAbArea(i).idx_probeUsedClus_IDs,:)];
 
         AUCSummaryRegions(i).trinum = [AUCSummaryRegions(i).trinum; ...
             ones(probeAbArea(i).probeUsedClus_num,1)*trinumber];
@@ -97,57 +97,75 @@ for i = 1:abareanum
         subplot(3,3,1);
         aucblock = AUCSummaryRegions(i).aucblock;
         blockthre = AUCSummaryRegions(i).aucblock_sigthre;
-        sigidx = {aucblock(:,1)>blockthre(:,1),aucblock(:,2)>blockthre(:,1)};
+        sigidx = {aucblock(:,1)>blockthre(:,1),aucblock(:,2)>blockthre(:,2)};
         gscatter(aucblock(:,1),aucblock(:,2),sigidx,'kgbr','oooo');
         xlabel('AUC bf tone for Block');
         ylabel('AUC af tone for Block');
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(blockthre(:,1)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(blockthre(:,2)),'k--');
+        plot(linspace(newrange(1),newrange(2),20),linspace(newrange(1),newrange(2),20),'k--');
         set(gca,'TickDir','out');
         box off;
+        hold off;
         legend('hide');
         
         %bfanswer block auc vs afanswer block auc
         subplot(3,3,2);
-        sigidx = {aucblock(:,3)>blockthre(:,3),aucblock(:,4)>blockthre(:,3)};
+        sigidx = {aucblock(:,3)>blockthre(:,3),aucblock(:,4)>blockthre(:,4)};
         gscatter(aucblock(:,3),aucblock(:,4),sigidx,'kgbr','oooo');
         xlabel('AUC bf answer for Block');
         ylabel('AUC af answer for Block');
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(blockthre(:,3)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(blockthre(:,4)),'k--');
+        plot(linspace(newrange(1),newrange(2),20),linspace(newrange(1),newrange(2),20),'k--');
         set(gca,'TickDir','out');
         box off;
+        hold off;
         legend('hide');
         
         %bftone choice auc vs aftone choice auc
         subplot(3,3,4);
         aucchoice = AUCSummaryRegions(i).aucchoice;
         choicethre = AUCSummaryRegions(i).aucchoice_sigthre;
-        sigidx = {aucchoice(:,1)>choicethre(:,1),aucchoice(:,2)>choicethre(:,1)};
+        sigidx = {aucchoice(:,1)>choicethre(:,1),aucchoice(:,2)>choicethre(:,2)};
         gscatter(aucchoice(:,1),aucchoice(:,2),sigidx,'kgbr','oooo');
         xlabel('AUC bf tone for Choice');
         ylabel('AUC af tone for Choice');
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(choicethre(:,1)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(choicethre(:,2)),'k--');
         set(gca,'TickDir','out');
         box off;
         legend('hide');
-        
+        hold off;
+
         %bfanswer choice AUC vs afanswer choice AUC
         subplot(3,3,5);
-        sigidx = {aucchoice(:,3)>choicethre(:,3),aucchoice(:,4)>choicethre(:,3)};
+        sigidx = {aucchoice(:,3)>choicethre(:,3),aucchoice(:,4)>choicethre(:,4)};
         gscatter(aucchoice(:,3),aucchoice(:,4),sigidx,'kgbr','oooo');
         xlabel('AUC bf answer for Choice');
         ylabel('AUC af answer for Choice');
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(choicethre(:,3)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(choicethre(:,4)),'k--');
         set(gca,'TickDir','out');
         box off;
         legend('hide');
+        hold off;
         
         %bftone outcome AUC vs aftone outcome AUC
         subplot(3,3,7);
@@ -160,45 +178,60 @@ for i = 1:abareanum
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(outcomethre(:,1)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(outcomethre(:,2)),'k--');
         set(gca,'TickDir','out');
         box off;
         legend('hide');
+        hold off;
         
         %bfanswer outcome AUC vs afanswer outcome AUC
         subplot(3,3,8);
-        sigidx = {aucoutcome(:,3)>outcomethre(:,3),aucoutcome(:,4)>outcomethre(:,3)};
+        sigidx = {aucoutcome(:,3)>outcomethre(:,3),aucoutcome(:,4)>outcomethre(:,4)};
         gscatter(aucoutcome(:,3),aucoutcome(:,4),sigidx,'kgbr','oooo');
         xlabel('AUC bf answer for Outcome');
         ylabel('AUC af answer for Outcome');
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(outcomethre(:,3)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(outcomethre(:,4)),'k--');
         set(gca,'TickDir','out');
         box off;
         legend('hide');
+        hold off;
         
         %bftone block AUC vs aftone choice
         subplot(3,3,3);
-        sigidx = {aucblock(:,1)>blockthre(:,1),aucchoice(:,2)>choicethre(:,1)};        
+        sigidx = {aucblock(:,1)>blockthre(:,1),aucchoice(:,2)>choicethre(:,2)};        
         gscatter(aucblock(:,1),aucchoice(:,2),sigidx,'kgbr','oooo');
         xlabel('AUC bf tone for Block');
         ylabel('AUC af tone for Choice');
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(blockthre(:,1)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(choicethre(:,2)),'k--');
         set(gca,'TickDir','out');    
         box off;
         legend('hide');
+        hold off;
         
         %afanswer outcome AUC vs afanswer choice AUC
         subplot(3,3,6);
-        sigidx = {aucchoice(:,4)>choicethre(:,3),aucoutcome(:,4)>outcomethre(:,3)};        
+        sigidx = {aucchoice(:,4)>choicethre(:,4),aucoutcome(:,4)>outcomethre(:,4)};        
         gscatter(aucchoice(:,4),aucoutcome(:,4),sigidx,'kgbr','oooo');
         xlabel('AUC af answer for Choice');
         ylabel('AUC af answer for Outcome');
         xr = xlim;yr = ylim;
         newrange= [min(xr(1),yr(1)),max(xr(2),yr(2))];
         xlim(newrange);ylim(newrange);
+        hold on;
+        plot(ones(20,1)*mean(choicethre(:,4)),linspace(newrange(1),newrange(2),20),'k--');
+        plot(linspace(newrange(1),newrange(2),20), ones(20,1)*mean(outcomethre(:,4)),'k--');
         set(gca,'TickDir','out');    
         box off;
         legend('hide');
@@ -212,9 +245,9 @@ for i = 1:abareanum
         set(gca,'XTick',[1,2,3,4,5]);
         set(gca,'TickDir','out');
         box off
-        saveas(gcf,fullfile(results_savefolder,'regions_auc',[num2str(i),'.png']));        
-        saveas(gcf,fullfile(results_savefolder,'regions_auc',[num2str(i),'.fig']));        
-        saveppt(fullfile(results_savefolder,'auc.ppt'),' ',h)
+        saveas(gcf,fullfile(results_savefolder,'regions_auc2',[num2str(i),'.png']));        
+        saveas(gcf,fullfile(results_savefolder,'regions_auc2',[num2str(i),'.fig']));        
+        saveppt(fullfile(results_savefolder,'auc2.ppt'),' ',h)
         close;
 
     end
