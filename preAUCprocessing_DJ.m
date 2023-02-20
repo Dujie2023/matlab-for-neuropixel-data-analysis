@@ -89,7 +89,7 @@ if ~exist(fullfile(np_data_pathway, 'np_extracted.mat'))
                     &(temp_ms<=Time_alined_outcome(t,2))))-double(Answertime_omiss(t))+double(t_before_answer);%ms
 
             %assign spikes to bins
-                Spike_firingrate_bin_outcome(i,t,:) =  1000*histcounts(spike_time_alinedoutcome{t,i},...
+                Spike_firingrate_bin_outcome(i,t,:) =  1000*histcounts(  {t,i},...
                                                    edges_outcome)/bin_length;%unit: Hz       
          end
 

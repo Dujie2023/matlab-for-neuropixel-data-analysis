@@ -1,11 +1,9 @@
-%% raster plot and psth
+%% raster plot
 np_data_pathway = 'D:\DJ_data\catprocessdata\202206batch_mouse1_cat\Cat_20220826_mouse1_fourSites_g0_imec0\ks2_5';
 load(fullfile(np_data_pathway, 'np_extracted.mat'));
 np2tone = Spike_firingrate_bin;
-ntrials= size(np2tone, 1);
-nunit = size(np2tone, 2);
-numbin = size(np2tone, 3);
-color_type = {[0.118, 0.565, 1], [0.529, 0.808, 0.980], [1, 0, 0], [1, 0.39, 0.28]};
+ntrials= size(np2tone, 2);
+nunit = size(np2tone, 1);
 
 save_rasterplot_folder = fullfile(np_data_pathway, 'raster_plot');
 if ~exist(save_rasterplot_folder)
@@ -30,7 +28,36 @@ for i = 1 : length(fre_type)
     fre_corr_block_idx{i,4} = fre_use == fre_type(i) & blocktype_use == 1 & inds_correct_used == 0;
 end
 
-for iunit = 1%:nunit
+%% fig1: for showing neuron encodes block infomation
+for iunit = 1:10%:nunit
+    figure;
+    hold on;
+    for t = 1:ntrials
+        t_unit_spike = spike_time_alined{t,iunit}; % Spike timings in the t_th trial for unit_idx, alined 2 tone, 1000: stim_onset time
+        
+        if blocktype_use(t) == 1
+            blockcolor = [0.9290 0.6940 0.1250];
+        elseif blocktype_use(t) == 0
+            blockcolor = [0.4660 0.6740 0.1880];
+        end
+        
+        nspike = numel(t_unit_spike);
+        if nspike~=0
+            pl = line([t_unit_spike';t_unit_spike'],[ones(1,nspike)*(t-1);ones(1,nspike)*t], 'LineWidth', 1, 'Color', blockcolor);% draw a black vertical line of length 1 at time t(x) and at trial t (y)
+        end
+    end
+    
+    ylim([0 ntrials])
+    ph = patch([bin_stim_onset*bin_length bin_stim_onset*bin_length+300 bin_stim_onset*bin_length+300 bin_stim_onset*bin_length],...
+        [0 0 ntrials ntrials],'k');
+    ph.FaceAlpha = 0.15;
+    ph.EdgeAlpha = 0;
+end
+
+%% fig2
+color_type = {[0.118, 0.565, 1], [0.529, 0.808, 0.980], [1, 0, 0], [1, 0.39, 0.28]};
+
+for iunit = 5%:nunit
     figure;
 %    savename = ['Cluster ',num2str(Used_id(iunit)), ' plot'];
 %    sgtitle(savename);
