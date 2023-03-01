@@ -1,17 +1,10 @@
 %% load data
 %data pathway 
-np_data_pathway = 'F:\NPrecording_DJ\catgt_mouse7_20221013_RSC2L_g0\Cat_mouse7_20221013_RSC2L_g0_imec0';
+np_data_pathway = 'G:\AllOutputs\b103a04_ksoutput\b103a04_20210408_NPSess01_g0_cat\catgt_b103a04_20210408_NPSess01_g0\Cat_b103a04_20210408_NPSess01_g0_imec0';
 % extract_waveformdata_dj(np_data_pathway, bin_name, rez);
 ksfolder = fullfile(np_data_pathway,'ks2_5');
-RawFilePath = 'F:\NPrecording_DJ\catgt_mouse7_20221013_RSC2L_g0\Cat_mouse7_20221013_RSC2L_g0_imec0';
-RawFileStrc = dir(fullfile(RawFilePath,'*.ap.bin'));
-if length(RawFileStrc) < 1
-    warning('Raw data file cannot be found.\n');
-    return;
-end
-fullpaths = fullfile(RawFilePath,RawFileStrc(1).name);
 
-%load cluster info
+%load data
 cgsFile = fullfile(ksfolder,'cluster_info.csv');
 cluster_info = readtable(cgsFile);
 cluster_info.Properties.VariableNames = {'id','Amplitude', 'ContamPct', 'KSLabel',...
@@ -31,13 +24,12 @@ NumGoodClus = length(UsedGoodClus_IDs);
 spike_time_incluster = cell(NumGoodClus,1);
 WaveWinSamples = [-30,51];%wafeform duration
 
-load(fullfile(ksfolder,'rez2.mat'));
 % for i = 1:NumGoodClus
 %     spike_time_incluster{i} = SpikeTimeSample(SpikeClus == UsedGoodClus_IDs(i));
 % end
 
 %% extract waveform data for each good unit and cal channel position
-maxSampleTime = max(SpikeTimeSample);
+
 for cUnit = 1: NumGoodClus
     
     goodcClusInds = UsedGoodClus_IDs(cUnit);
@@ -63,7 +55,7 @@ for cUnit = 1: NumGoodClus
         offsetTimeSample = cspStartInds - 1;
         
         %ensure that the spike in the recording time
-        if offsetTimeSample < 0 || cspEndInds > maxSampleTime
+        if offsetTimeSample < 0 || cspEndInds > rez.ops.sampsToRead
             continue;
         end  
         
@@ -106,10 +98,10 @@ for cUnit = 1: NumGoodClus
     %cal current channel at each sammple time, matrix: sample_time*num_good unit value: channnel
     
     
-%     saveName = fullfile(ksprocessfolder,'Waveforms_bin',sprintf('Unit%d waveform plot save',cUnit));
-%     saveas(huf,saveName,'png');   
-%     saveas(huf,saveName,'fig');   
-%     close(huf);
+    saveName = fullfile(ksprocessfolder,'Waveforms_bin',sprintf('Unit%d waveform plot save',cUnit));
+    saveas(huf,saveName,'png');   
+    saveas(huf,saveName,'fig');   
+    close(huf);
     
     fprintf('Unit%d/%d waveform plot save.\n',cUnit, NumofUnit)
 end

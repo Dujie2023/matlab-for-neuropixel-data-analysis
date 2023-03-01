@@ -26,7 +26,8 @@ end
 
 % load cluster info
 cgsFile = fullfile(ksfolder,'cluster_info.csv');
-cluster_info = readtable(cgsFile);
+
+% cluster_info = readtable(cgsFile);
 UsedClus_IDs = cluster_info.id;
 ChannelUseds_id = cluster_info.ch;
 SpikeTimeSample = readNPY(fullfile(ksfolder,'spike_times.npy'));
@@ -36,6 +37,7 @@ WaveWinSamples = [-30,51];%wafeform duration
 NumofUnit = length(UsedClus_IDs);
 UnitDatas = cell(NumofUnit,2);
 UnitFeatures = cell(NumofUnit,7);
+
 for cUnit = 1: NumofUnit
     
     cClusInds = UsedClus_IDs(cUnit);
@@ -99,13 +101,8 @@ for cUnit = 1: NumofUnit
     text(6,0.8*max(AvgWaves),{sprintf('trough2peak = %d',trough2peakT);...
         sprintf('repolarT = %d',repolarT);...
         sprintf('prepeak2pospeakratio = %.2f',prepeak2pospeakratio)},'FontSize',10);    
-  
-    wave_spread = waveform_feature_funcollect.cal_waveform_spread(UnitDatas{cUnit,2},cClusChannel);
-    snr = waveform_feature_funcollect.cal_wave_snr(UnitDatas{cUnit,1});
-    
-    UnitFeatures(cUnit,:) = {wave_amplitude, trough2peakT, repolarT, prepeak2pospeakratio, wave_spread, snr, troughpeakidx};
-    
-    saveName = fullfile(ksprocessfolder,'Waveforms',sprintf('Unit%d waveform plot save',cUnit));
+      
+    saveName = fullfile(ksprocessfolder,'Waveforms_bin',sprintf('Unit%d waveform plot save',cUnit));
     saveas(huf,saveName,'png');   
     saveas(huf,saveName,'fig');   
     close(huf);
